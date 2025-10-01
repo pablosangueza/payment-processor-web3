@@ -18,25 +18,16 @@
 @code {
     private string? DownloadUrl;
 
-    // EJEMPLO: USDT en Polygon (actualiza con tus datos)
-    private PaymentRequest Req = new(
-        RpcUrl: "https://rpc-amoy.polygon.technology",               // o Alchemy/Infura/QuickNode
-        TokenContract: "0x41E94Eb019C0762f9BfcF9Fb1E58725BfB0E7582", // USDT (ejemplo, verifica en cada red)
-        MerchantAddress: "0xAE088ffbbB157E8d826C855f2BFc7f6eC1AE8A9b",
-        ExpectedAmount: 7.00m,
-        OrderId: Guid.NewGuid().ToString(),
-        ConfirmationsRequired: 3,
-        LookbackBlocks: 20_000
-    );
+    // Only set required fields, let the watcher fill the rest from config
+    private PaymentRequest Req = new PaymentRequest()
+    {
+        OrderId = Guid.NewGuid().ToString(),
+        ExpectedAmount = 10.00m,
+    };
 
     private Task HandlePaid(PaymentResult result)
     {
-        // TODO: aquí llama a tu backend para:
-        // - marcar orden como pagada
-        // - generar URL de descarga con expiración (S3 pre-signed, Blob SAS, etc.)
         DownloadUrl = $"https://tu-servidor.com/download?order={Req.OrderId}&sig=...";
-
-        // tracking opcional
         Console.WriteLine($"Pago OK: {result.TransactionHash} {result.Amount} {result.From} -> {result.To}");
         StateHasChanged();
         return Task.CompletedTask;

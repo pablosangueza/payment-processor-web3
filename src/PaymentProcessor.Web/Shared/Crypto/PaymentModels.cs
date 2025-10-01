@@ -3,15 +3,20 @@ using System.Numerics;
 
 namespace YourApp.Shared.Crypto;
 
-public record PaymentRequest(
-    string RpcUrl,
-    string TokenContract,    // ERC-20 (USDT/USDC)
-    string MerchantAddress,  // dirección que recibe el pago
-    decimal ExpectedAmount,  // en unidades humanas (p.ej. 7.00 USDT)
-    string? OrderId = null,
-    uint ConfirmationsRequired = 3,
-    ulong LookbackBlocks = 10_000 // rango a revisar hacia atrás
-);
+public class PaymentRequest
+{
+    public string RpcUrl { get; set; } = "";
+    public string TokenContract { get; set; } = "";
+    public string MerchantAddress { get; set; } = "";
+    public decimal ExpectedAmount { get; set; }
+    public string? OrderId { get; set; }
+    public uint ConfirmationsRequired { get; set; } = 3;
+    public ulong LookbackBlocks { get; set; } = 10_000;
+    public string TokenSymbol { get; set; } = "USDT";
+    public string NetworkName { get; set; } = "Ethereum";
+
+    
+}
 
 public enum PaymentState { Pending, Confirmed, Failed, Timeout }
 
