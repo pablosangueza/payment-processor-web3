@@ -20,9 +20,9 @@
 
     // EJEMPLO: USDT en Polygon (actualiza con tus datos)
     private PaymentRequest Req = new(
-        RpcUrl: "https://polygon-rpc.com",               // o Alchemy/Infura/QuickNode
-        TokenContract: "0x3813e82e6f7098b9583FC0F33a962D02018B6803", // USDT (ejemplo, verifica en cada red)
-        MerchantAddress: "0xTuDireccionQueRecibePago",
+        RpcUrl: "https://rpc-amoy.polygon.technology",               // o Alchemy/Infura/QuickNode
+        TokenContract: "0x41E94Eb019C0762f9BfcF9Fb1E58725BfB0E7582", // USDT (ejemplo, verifica en cada red)
+        MerchantAddress: "0xAE088ffbbB157E8d826C855f2BFc7f6eC1AE8A9b",
         ExpectedAmount: 7.00m,
         OrderId: Guid.NewGuid().ToString(),
         ConfirmationsRequired: 3,
