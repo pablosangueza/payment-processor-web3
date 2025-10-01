@@ -1,0 +1,44 @@
+@page "/checkout"
+@using PaymentProcessor.Web.Shared.Crypto
+@using YourApp.Shared.Crypto
+
+<h3>Checkout USDT/USDC</h3>
+
+<CryptoPaymentWatcher Request="@Req"
+                      Timeout="@TimeSpan.FromMinutes(20)"
+                      OnPaymentConfirmed="HandlePaid" />
+
+@if (!string.IsNullOrEmpty(DownloadUrl))
+{
+    <div class="alert alert-success mt-3">
+        ¡Pago confirmado! <a href="@DownloadUrl" target="_blank">Descargar producto</a>
+    </div>
+}
+
+@code {
+    private string? DownloadUrl;
+
+    // EJEMPLO: USDT en Polygon (actualiza con tus datos)
+    private PaymentRequest Req = new(
+        RpcUrl: "https://polygon-rpc.com",               // o Alchemy/Infura/QuickNode
+        TokenContract: "0x3813e82e6f7098b9583FC0F33a962D02018B6803", // USDT (ejemplo, verifica en cada red)
+        MerchantAddress: "0xTuDireccionQueRecibePago",
+        ExpectedAmount: 7.00m,
+        OrderId: Guid.NewGuid().ToString(),
+        ConfirmationsRequired: 3,
+        LookbackBlocks: 20_000
+    );
+
+    private Task HandlePaid(PaymentResult result)
+    {
+        // TODO: aquí llama a tu backend para:
+        // - marcar orden como pagada
+        // - generar URL de descarga con expiración (S3 pre-signed, Blob SAS, etc.)
+        DownloadUrl = $"https://tu-servidor.com/download?order={Req.OrderId}&sig=...";
+
+        // tracking opcional
+        Console.WriteLine($"Pago OK: {result.TransactionHash} {result.Amount} {result.From} -> {result.To}");
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+}

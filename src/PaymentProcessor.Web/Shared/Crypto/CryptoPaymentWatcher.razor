@@ -1,0 +1,54 @@
+@* /Shared/Crypto/CryptoPaymentWatcher.razor *@
+@using YourApp.Shared.Crypto
+@inject IPaymentValidator Validator
+
+<div class="crypto-watcher">
+    <div><b>Order:</b> @Request.OrderId</div>
+    <div><b>Token:</b> @Request.TokenContract</div>
+    <div><b>Merchant:</b> @Request.MerchantAddress</div>
+    <div><b>Esperando:</b> @Request.ExpectedAmount</div>
+    <div><b>Estado:</b> @StatusText</div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public PaymentRequest Request { get; set; } = default!;
+    [Parameter] public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(15);
+    [Parameter] public EventCallback<PaymentResult> OnPaymentConfirmed { get; set; }
+
+    private string StatusText = "Pendiente…";
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cts = new CancellationTokenSource();
+        _ = RunWatcherAsync(_cts.Token);
+    }
+
+    private async Task RunWatcherAsync(CancellationToken ct)
+    {
+        StatusText = "Escuchando blockchain…";
+        StateHasChanged();
+
+        var result = await Validator.WaitForPaymentAsync(Request, Timeout, ct);
+
+        StatusText = result.State switch
+        {
+            PaymentState.Confirmed => $"Confirmado (tx: {result.TransactionHash})",
+            PaymentState.Timeout   => "Timeout esperando pago",
+            PaymentState.Failed    => $"Falló: {result.Message}",
+            _ => "Pendiente…"
+        };
+        StateHasChanged();
+
+        if (result.State == PaymentState.Confirmed)
+        {
+            await OnPaymentConfirmed.InvokeAsync(result);
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+}

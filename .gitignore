@@ -1,0 +1,24 @@
+# Build
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+# VS/VS Code
+.vscode/
+*.csproj.user
+*.swp
+*.DS_Store
+
+# Publish
+src/PaymentProcessor.Web/bin/
+src/PaymentProcessor.Web/obj/
+src/PaymentProcessor.Web/wwwroot/*.gz
+src/PaymentProcessor.Web/wwwroot/*.br
+
+# Rider
+.idea/
+
+# Logs
+*.log
